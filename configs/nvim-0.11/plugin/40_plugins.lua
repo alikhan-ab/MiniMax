@@ -49,12 +49,17 @@ now_if_args(function()
   -- After changing this, restart Neovim once to install necessary parsers. Wait
   -- for the installation to finish before opening a file for added language(s).
   local languages = {
-    -- These are already pre-installed with Neovim. Used as an example.
     'lua',
     'vimdoc',
     'markdown',
     'python',
     'swift',
+    'javascript',
+    'typescript',
+    'jsx',
+    'tsx',
+    'html',
+    'css'
     -- Add here more languages with which you want to use tree-sitter
     -- To see available languages:
     -- - Execute `:=require('nvim-treesitter').get_available()`

@@ -59,7 +59,7 @@ now_if_args(function()
     'jsx',
     'tsx',
     'html',
-    'css'
+    'css',
     -- Add here more languages with which you want to use tree-sitter
     -- To see available languages:
     -- - Execute `:=require('nvim-treesitter').get_available()`
@@ -183,7 +183,7 @@ later(function()
   require('hardtime').setup({})
 end)
 
-now_if_args(function()
+later(function()
   add({
     source = 'nvim-neo-tree/neo-tree.nvim',
     checkout = 'v3.x',
@@ -199,3 +199,9 @@ now_if_args(function()
     }
   })
 end)
+
+
+later(function()
+  add('nvim-treesitter/nvim-treesitter-context')
+end)
+

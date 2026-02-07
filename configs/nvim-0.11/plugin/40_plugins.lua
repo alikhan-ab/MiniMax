@@ -56,7 +56,6 @@ now_if_args(function()
     'swift',
     'javascript',
     'typescript',
-    'jsx',
     'tsx',
     'html',
     'css',

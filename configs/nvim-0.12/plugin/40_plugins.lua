@@ -105,6 +105,10 @@ now_if_args(function()
   -- })
 end)
 
+now_if_args(function()
+  vim.lsp.enable('sourcekit')
+end)
+
 -- Formatting =================================================================
 
 -- Programs dedicated to text formatting (a.k.a. formatters) are very useful.
@@ -152,10 +156,16 @@ later(function() add({ 'https://github.com/rafamadriz/friendly-snippets' }) end)
 -- If you need them to work elsewhere, consider using other package managers.
 --
 -- You can use it like so:
--- now_if_args(function()
---   add({ 'https://github.com/mason-org/mason.nvim' })
---   require('mason').setup()
--- end)
+now_if_args(function()
+  add({ 'https://github.com/mason-org/mason.nvim' })
+  add({ 'https://github.com/mason-org/mason-lspconfig.nvim'})
+  add({ 'https://github.com/WhoIsSethDaniel/mason-tool-installer.nvim'})
+  require('mason').setup()
+  require('mason-lspconfig').setup()
+  require('mason-tool-installer').setup({
+    ensure_installed = { 'lua_ls', 'pyrefly' }
+  })
+end)
 
 -- Beautiful, usable, well maintained color schemes outside of 'mini.nvim' and
 -- have full support of its highlight groups. Use if you don't like 'miniwinter'

@@ -181,3 +181,21 @@ end)
 --   -- Enable only one
 --   vim.cmd('color everforest')
 -- end)
+
+later(function()
+  add {
+    {
+      src = "https://github.com/obsidian-nvim/obsidian.nvim",
+      version = vim.version.range "*",
+    },
+  }
+  require('obsidian').setup({
+    legacy_commands = false,
+    workspaces = {
+      {
+        name = "personal",
+        path = "/Users/alikhan/Library/Mobile Documents/iCloud~md~obsidian/Documents/Personal",
+      },
+    },
+  })
+end)

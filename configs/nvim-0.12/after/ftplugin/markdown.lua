@@ -40,3 +40,6 @@ vim.b.minisurround_config = {
     },
   },
 }
+
+-- Hide markup (for Obsidian)
+vim.opt_local.conceallevel = 1

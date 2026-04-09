@@ -9,8 +9,8 @@
 -- Use this file to install and configure other such plugins.
 
 -- Make concise helpers for installing/adding plugins in two stages
-local add, now, later = MiniDeps.add, MiniDeps.now, MiniDeps.later
-local now_if_args = _G.Config.now_if_args
+local add = vim.pack.add
+local now_if_args, later = Config.now_if_args, Config.later
 
 -- Tree-sitter ================================================================
 
@@ -38,38 +38,28 @@ local now_if_args = _G.Config.now_if_args
 --   with `:TSInstall <language>`. Be sure to have necessary system dependencies
 --   (see MiniMax README section for software requirements).
 now_if_args(function()
+  -- Define hook to update tree-sitter parsers after plugin is updated
+  local ts_update = function() vim.cmd('TSUpdate') end
+  Config.on_packchanged('nvim-treesitter', { 'update' }, ts_update, ':TSUpdate')
+
   add({
-    source = 'nvim-treesitter/nvim-treesitter',
-    -- Update tree-sitter parser after plugin is updated
-    hooks = { post_checkout = function() vim.cmd('TSUpdate') end },
-    -- Pin to the commit just before the plugin dropped Neovim=0.11 support
-    checkout = '90cd6580e720caedacb91fdd587b747a6e77d61f',
-  })
-  add({
-    source = 'nvim-treesitter/nvim-treesitter-textobjects',
-    -- Pin to the commit corresponding to 'nvim-treesitter' commit
-    checkout = '93d60a475f0b08a8eceb99255863977d3a25f310',
+    'https://github.com/nvim-treesitter/nvim-treesitter',
+    'https://github.com/nvim-treesitter/nvim-treesitter-textobjects',
   })
 
   -- Define languages which will have parsers installed and auto enabled
   -- After changing this, restart Neovim once to install necessary parsers. Wait
   -- for the installation to finish before opening a file for added language(s).
   local languages = {
+    -- These are already pre-installed with Neovim. Used as an example.
     'lua',
     'vimdoc',
     'markdown',
-    'python',
-    'swift',
-    'javascript',
-    'typescript',
-    'tsx',
-    'html',
-    'css',
     -- Add here more languages with which you want to use tree-sitter
     -- To see available languages:
     -- - Execute `:=require('nvim-treesitter').get_available()`
     -- - Visit 'SUPPORTED_LANGUAGES.md' file at
-    --   https://github.com/nvim-treesitter/nvim-treesitter
+    --   https://github.com/nvim-treesitter/nvim-treesitter/blob/main
   }
   local isnt_installed = function(lang)
     return #vim.api.nvim_get_runtime_file('parser/' .. lang .. '.*', false) == 0
@@ -103,12 +93,9 @@ end)
 -- inside 'neovim/nvim-lspconfig' plugin.
 --
 -- Add it now if file (and not 'mini.starter') is shown after startup.
+now_if_args(function()
+  add({ 'https://github.com/neovim/nvim-lspconfig' })
 
-now(function()
-  add('neovim/nvim-lspconfig')
-  add('mason-org/mason.nvim')
-  add('mason-org/mason-lspconfig.nvim')
-  add('WhoIsSethDaniel/mason-tool-installer.nvim')
   -- Use `:h vim.lsp.enable()` to automatically enable language server based on
   -- the rules provided by 'nvim-lspconfig'.
   -- Use `:h vim.lsp.config()` or 'after/lsp/' directory to configure servers.
@@ -116,15 +103,6 @@ now(function()
   -- vim.lsp.enable({
   --   -- For example, if `lua-language-server` is installed, use `'lua_ls'` entry
   -- })
-  require('mason').setup()
-  require('mason-lspconfig').setup()
-  require('mason-tool-installer').setup({
-    ensure_installed = { 'lua_ls', 'pyrefly' }
-  })
-end)
-
-later(function()
-  vim.lsp.enable('sourcekit')
 end)
 
 -- Formatting =================================================================
@@ -136,7 +114,7 @@ end)
 -- The 'stevearc/conform.nvim' plugin is a good and maintained solution for easier
 -- formatting setup.
 later(function()
-  add('stevearc/conform.nvim')
+  add({ 'https://github.com/stevearc/conform.nvim' })
 
   -- See also:
   -- - `:h Conform`
@@ -162,53 +140,34 @@ end)
 -- snippet files. They are organized in 'snippets/' directory (mostly) per language.
 -- 'mini.snippets' is designed to work with it as seamlessly as possible.
 -- See `:h MiniSnippets.gen_loader.from_lang()`.
-later(function() add('rafamadriz/friendly-snippets') end)
+later(function() add({ 'https://github.com/rafamadriz/friendly-snippets' }) end)
+
+-- Honorable mentions =========================================================
+
+-- 'mason-org/mason.nvim' (a.k.a. "Mason") is a great tool (package manager) for
+-- installing external language servers, formatters, and linters. It provides
+-- a unified interface for installing, updating, and deleting such programs.
+--
+-- The caveat is that these programs will be set up to be mostly used inside Neovim.
+-- If you need them to work elsewhere, consider using other package managers.
+--
+-- You can use it like so:
+-- now_if_args(function()
+--   add({ 'https://github.com/mason-org/mason.nvim' })
+--   require('mason').setup()
+-- end)
 
 -- Beautiful, usable, well maintained color schemes outside of 'mini.nvim' and
 -- have full support of its highlight groups. Use if you don't like 'miniwinter'
 -- enabled in 'plugin/30_mini.lua' or other suggested 'mini.hues' based ones.
--- MiniDeps.now(function()
---   -- Install only those that you need
---   add('sainnhe/everforest')
---   add('Shatur/neovim-ayu')
---   add('ellisonleao/gruvbox.nvim')
+-- Config.now(function()
+--  -- Install only those that you need
+--  add({
+--    'https://github.com/sainnhe/everforest',
+--    'https://github.com/Shatur/neovim-ayu',
+--    'https://github.com/ellisonleao/gruvbox.nvim',
+--  })
 --
 --   -- Enable only one
 --   vim.cmd('color everforest')
 -- end)
-
--- My Plugins =================================================================
-
-later(function()
-  add({
-    source = "m4xshen/hardtime.nvim",
-    depends = { "MunifTanjim/nui.nvim" }
-  })
-
-  require('hardtime').setup({
-    enabled = false
-  })
-end)
-
-later(function()
-  add({
-    source = 'nvim-neo-tree/neo-tree.nvim',
-    checkout = 'v3.x',
-    depends = {
-      "nvim-lua/plenary.nvim",
-      "MunifTanjim/nui.nvim",
-      "nvim-tree/nvim-web-devicons", -- optional, but recommended
-    }
-  })
-  require("neo-tree").setup({
-    window = {
-      width = 25
-    }
-  })
-end)
-
-
-later(function()
-  add('nvim-treesitter/nvim-treesitter-context')
-end)
-
